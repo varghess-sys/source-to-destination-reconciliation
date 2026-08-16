@@ -1,0 +1,8 @@
+EmployeeID,FirstName,MiddleName,LastName,AddressLine1,AddressLine2,AddressLine3,CountryCode,AreaCode,LocalNumber,GrossSalary,TotalLossOfPayDays,LossOfPayDeduction,TotalSalary,TotalBonus,PerformanceBonus,TotalCompensation,TestCaseNote
+E001,John,Robert,Smith,100 Main St,,,1,555,1234567,60000.00,0,0.00,60000.00,2000.00,9000.00,71000.00,"LOP deliberately ignored"
+E002,Mary,,Jones,200 Oak Avenue,,,1,555,2223333,54000.00,0,0.00,54000.00,1700.00,,54000.00,"Address variation and incomplete compensation"
+E003,Bob,,Lee,300 Pine Rd,,,1,555,3334444,57600.00,3,600.00,57000.00,1200.00,,58200.00,"Wrong first name and wrong LOP deduction"
+E004,Susan,Marie,Clark,400 Elm St,,,,,,62400.00,2,,62400.00,,,,"Missing phone and compensation components"
+E005,Nobody,,Real,999 Fake Blvd,,,1,555,0000000,45000.00,0,0.00,45000.00,1000.00,0.00,46000.00,"Orphan employee not present in sources"
+E006,Karen,,White,600 Cedar Ln,,,1,555,6667777,56400.00,1,0.00,56400.00,1400.00,8460.00,66260.00,"LOP deliberately ignored"
+E-007,Alan,,Foster,700 Birch Way,,,1,555,7771111,27000.00,4,900.00,26100.00,45000.00,,71100.00,"Currency conversion and performance bonus omitted"

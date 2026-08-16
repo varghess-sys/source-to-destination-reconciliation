@@ -1,0 +1,23 @@
+<Employees>
+  <Employee>
+    <ID>E001</ID>
+    <First>John</First>
+    <Last>Smith</Last>
+    <Address>100 Main St</Address>
+    <Tel>5551234567</Tel>
+  </Employee>
+  <Employee>
+    <ID>E006</ID>
+    <First>Karen</First>
+    <Last>White</Last>
+    <Address>600 Cedar Ln</Address>
+    <Tel>555-666-7777</Tel>
+  </Employee>
+  <Employee>
+    <ID>e-007</ID>
+    <First>Alan</First>
+    <Last>Foster</Last>
+    <Address>700 Birch Way</Address>
+    <Tel>555-777-1111</Tel>
+  </Employee>
+</Employees>

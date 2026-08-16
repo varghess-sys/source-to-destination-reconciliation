@@ -1,0 +1,213 @@
+{
+  "key_field": "EmployeeID",
+  "key_transform": "normalize_id",
+
+  "name_standardization": {
+    "fields": ["FirstName", "MiddleName", "LastName"],
+    "fill_when_missing": ["MiddleName", "LastName"],
+    "filler": "XX"
+  },
+
+  "base_currency": "INR",
+  "fx_rates": {
+    "INR": 1.0,
+    "USD": 83.0,
+    "EUR": 90.0
+  },
+
+  "fields_to_validate": [
+    "EmployeeID",
+    "FirstName", "MiddleName", "LastName",
+    "AddressLine1", "AddressLine2", "AddressLine3",
+    "CountryCode", "AreaCode", "LocalNumber",
+    "GrossSalary", "TotalLossOfPayDays", "LossOfPayDeduction",
+    "TotalSalary", "TotalBonus"
+  ],
+
+  "field_transforms": {
+    "EmployeeID": "alnum_only",
+    "FirstName": "title_case",
+    "MiddleName": "title_case",
+    "LastName": "title_case",
+    "AddressLine1": "normalize_address",
+    "AddressLine2": "normalize_address",
+    "AddressLine3": "normalize_address",
+    "CountryCode": "digits_only",
+    "AreaCode": "digits_only",
+    "LocalNumber": "digits_only",
+    "GrossSalary": "numeric",
+    "TotalLossOfPayDays": "numeric",
+    "LossOfPayDeduction": "numeric",
+    "TotalSalary": "numeric",
+    "TotalBonus": "numeric",
+    "PerformanceBonus": "numeric",
+    "TotalCompensation": "numeric"
+  },
+
+  "sources": [
+    {
+      "name": "HR_CSV_Extract",
+      "type": "csv",
+      "path": "sample_data/source_hr.csv",
+      "delimiter": ",",
+      "field_map": {
+        "EmpID": "EmployeeID",
+        "FullName": "Name",
+        "HomeAddress": "Address",
+        "PhoneNumber": "Phone"
+      },
+      "derived_fields": [
+        {"source_field": "Name", "type": "split_name", "output_fields": ["FirstName", "MiddleName", "LastName"]},
+        {"source_field": "Address", "type": "split_address", "output_fields": ["AddressLine1", "AddressLine2", "AddressLine3"]},
+        {"source_field": "Phone", "type": "split_phone", "output_fields": ["CountryCode", "AreaCode", "LocalNumber"]}
+      ]
+    },
+    {
+      "name": "Legacy_XML_System",
+      "type": "xml",
+      "path": "sample_data/source_legacy.xml",
+      "record_xpath": ".//Employee",
+      "field_map": {
+        "ID": "EmployeeID",
+        "First": "FirstName",
+        "Last": "LastName",
+        "Address": "Address",
+        "Tel": "Phone"
+      },
+      "derived_fields": [
+        {"source_field": "Address", "type": "split_address", "output_fields": ["AddressLine1", "AddressLine2", "AddressLine3"]},
+        {"source_field": "Phone", "type": "split_phone", "output_fields": ["CountryCode", "AreaCode", "LocalNumber"]}
+      ]
+    },
+    {
+      "name": "Payroll_Flat_Extract",
+      "type": "flat",
+      "path": "sample_data/source_notepad.txt",
+      "mode": "delimited",
+      "delimiter": "|",
+      "has_header": true,
+      "field_map": {
+        "EMP_ID": "EmployeeID",
+        "EMP_NAME": "Name",
+        "PHONE": "Phone",
+        "EFFECTIVE_DATE": "EffectiveDate"
+      },
+      "dedupe": {
+        "group_by": "EmployeeID",
+        "keep_latest_by": "EffectiveDate"
+      },
+      "derived_fields": [
+        {"source_field": "Name", "type": "split_name", "output_fields": ["FirstName", "MiddleName", "LastName"]},
+        {"source_field": "Phone", "type": "split_phone", "output_fields": ["CountryCode", "AreaCode", "LocalNumber"]}
+      ]
+    },
+    {
+      "name": "MonthlySalary_Excel",
+      "type": "excel",
+      "path": "sample_data/source_salary.xlsx",
+      "field_map": {
+        "EmployeeID": "EmployeeID",
+        "Currency": "Currency",
+        "JoinDate": "JoinDate",
+        "LeaveDate": "LeaveDate",
+        "Jan": "Jan", "Feb": "Feb", "Mar": "Mar", "Apr": "Apr",
+        "May": "May", "Jun": "Jun", "Jul": "Jul", "Aug": "Aug",
+        "Sep": "Sep", "Oct": "Oct", "Nov": "Nov", "Dec": "Dec",
+        "JanLOPDays": "JanLOPDays", "FebLOPDays": "FebLOPDays",
+        "MarLOPDays": "MarLOPDays", "AprLOPDays": "AprLOPDays",
+        "MayLOPDays": "MayLOPDays", "JunLOPDays": "JunLOPDays",
+        "JulLOPDays": "JulLOPDays", "AugLOPDays": "AugLOPDays",
+        "SepLOPDays": "SepLOPDays", "OctLOPDays": "OctLOPDays",
+        "NovLOPDays": "NovLOPDays", "DecLOPDays": "DecLOPDays"
+      },
+      "currency_field": "Currency",
+      "currency_amount_fields": ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+      "derived_fields": [
+        {
+          "type": "salary_with_lop",
+          "salary_fields": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+          "loss_of_pay_fields": ["JanLOPDays", "FebLOPDays", "MarLOPDays", "AprLOPDays", "MayLOPDays", "JunLOPDays", "JulLOPDays", "AugLOPDays", "SepLOPDays", "OctLOPDays", "NovLOPDays", "DecLOPDays"],
+          "month_numbers": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+          "month_labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+          "output_fields": {
+            "gross_salary": "GrossSalary",
+            "loss_of_pay_days": "TotalLossOfPayDays",
+            "loss_of_pay_deduction": "LossOfPayDeduction",
+            "net_salary": "TotalSalary"
+          },
+          "join_date_field": "JoinDate",
+          "leave_date_field": "LeaveDate",
+          "key_field": "EmployeeID",
+          "year": 2026
+        }
+      ]
+    },
+    {
+      "name": "PerformanceBonus_Notepad",
+      "type": "flat",
+      "path": "sample_data/source_bonus.txt",
+      "mode": "delimited",
+      "delimiter": "|",
+      "has_header": true,
+      "field_map": {
+        "EMP_ID": "EmployeeID",
+        "QUARTER": "Quarter",
+        "BONUS_AMOUNT": "BonusAmount"
+      },
+      "aggregate": {
+        "group_by": "EmployeeID",
+        "sum_fields": {"BonusAmount": "TotalBonus"}
+      }
+    },
+    {
+      "name": "PerformanceRating_CSV",
+      "type": "csv",
+      "path": "sample_data/source_performance.csv",
+      "delimiter": ",",
+      "field_map": {
+        "EMP_ID": "EmployeeID",
+        "RATING": "Rating"
+      }
+    }
+  ],
+
+  "computed_fields": [
+    {
+      "output_field": "PerformanceBonus",
+      "op": "tier_percentage",
+      "base_field": "TotalSalary",
+      "tier_field": "Rating",
+      "tiers": {"A": 0.15, "B": 0.10, "C": 0.05},
+      "default_rate": 0
+    },
+    {
+      "output_field": "TotalCompensation",
+      "op": "sum",
+      "sum_of": ["TotalSalary", "TotalBonus", "PerformanceBonus"]
+    }
+  ],
+
+  "destination": {
+    "type": "csv",
+    "path": "sample_data/destination_test_cases.csv",
+    "field_map": {
+      "EmployeeID": "EmployeeID",
+      "FirstName": "FirstName",
+      "MiddleName": "MiddleName",
+      "LastName": "LastName",
+      "AddressLine1": "AddressLine1",
+      "AddressLine2": "AddressLine2",
+      "AddressLine3": "AddressLine3",
+      "CountryCode": "CountryCode",
+      "AreaCode": "AreaCode",
+      "LocalNumber": "LocalNumber",
+      "GrossSalary": "GrossSalary",
+      "TotalLossOfPayDays": "TotalLossOfPayDays",
+      "LossOfPayDeduction": "LossOfPayDeduction",
+      "TotalSalary": "TotalSalary",
+      "TotalBonus": "TotalBonus",
+      "PerformanceBonus": "PerformanceBonus",
+      "TotalCompensation": "TotalCompensation"
+    }
+  }
+}

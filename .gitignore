@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.log
+outputs/
+reconciliation_report*.xlsx
+reconciliation_report*.pdf
+sample_data/private/
+
+
+!examples/reconciliation_report_clean.xlsx
+!examples/reconciliation_report_test_cases.xlsx
